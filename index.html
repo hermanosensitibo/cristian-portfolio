@@ -1,0 +1,810 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body><title>Cristian Jupia Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Geist:wght@400;500;600&display=swap">
+<style>
+/* The ship log: a Technical Lead who carries work from brief to production. The page reads like
+   a release pipeline: a side rail of stages, a reel of shipped work, a commit-graph career, and a
+   brief you assemble yourself at the end. Dark, warm, one signal colour. */
+:root {
+  color-scheme: dark;
+  --bg: #0b0b0a;
+  --raise: #141412;
+  --raise-2: #1b1b18;
+  --line: rgba(244, 241, 234, 0.1);
+  --ink: #f4f1ea;
+  --soft: #cfcbc2;
+  --muted: #8f8b82;
+  --signal: #ff5b2e;
+  --signal-ink: #160b07;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --text: "Geist", "Segoe UI", system-ui, sans-serif;
+  --wrap: 1180px;
+  --pad: max(24px, env(safe-area-inset-left, 0px));
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--text); overflow-x: clip; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { margin: 0; font-family: var(--display); font-weight: 700; letter-spacing: -0.025em; line-height: 1; font-variation-settings: "opsz" 96; }
+p { margin: 0; text-wrap: pretty; }
+a { color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 6px; }
+.wrap { width: min(var(--wrap), 100% - var(--pad) * 2); margin-inline: auto; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.accent { color: var(--signal); }
+
+.btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border: 0; border-radius: 12px; background: var(--signal); color: var(--signal-ink); font: 600 15px var(--text); text-decoration: none; cursor: pointer; transition: transform .2s var(--ease), filter .2s var(--ease); }
+.btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn.ghost:hover { box-shadow: inset 0 0 0 1px rgba(244, 241, 234, .3); filter: none; }
+.btn svg, .arrow { width: 14px; height: 14px; flex: none; transition: transform .2s var(--ease); }
+.btn:hover svg, a:hover > .arrow { transform: translate(2px, -2px); }
+.chip { display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 8px; background: var(--raise-2); font-size: 13px; color: var(--soft); white-space: nowrap; }
+.label { font: 500 13px var(--text); color: var(--muted); display: flex; gap: 10px; align-items: baseline; }
+.label b { color: var(--signal); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------- chrome: scroll progress, top bar, stage rail ---------- */
+.progress { position: fixed; inset: 0 0 auto; height: 3px; z-index: 60; background: var(--signal); transform-origin: 0 50%; transform: scaleX(0); }
+.top { position: fixed; inset: 0 0 auto; z-index: 50; padding: 18px var(--pad); display: flex; justify-content: space-between; align-items: center; pointer-events: none; transition: background-color .3s var(--ease); }
+.top.scrolled { background: rgba(11, 11, 10, 0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.top > * { pointer-events: auto; }
+.mark { display: inline-flex; align-items: baseline; font: 800 26px var(--display); letter-spacing: -0.04em; text-decoration: none; }
+.mark i { font-style: normal; color: var(--signal); }
+.top .btn { min-height: 42px; padding: 0 18px; font-size: 14px; }
+.rail { position: fixed; z-index: 40; left: max(20px, calc((100vw - var(--wrap)) / 2 - 104px)); top: 50%; translate: 0 -50%; display: flex; flex-direction: column; gap: 4px; }
+.rail a { display: grid; grid-template-columns: 22px auto; align-items: center; gap: 10px; min-height: 34px; text-decoration: none; font: 500 12px var(--text); color: var(--muted); transition: color .2s; }
+.rail a span { font-variant-numeric: tabular-nums; }
+.rail a em { font-style: normal; opacity: 0; transform: translateX(-6px); transition: opacity .25s var(--ease), transform .25s var(--ease); }
+.rail a::before { content: ""; grid-column: 1; grid-row: 1; width: 22px; height: 2px; background: currentColor; border-radius: 2px; transition: width .25s var(--ease); }
+.rail a span { display: none; }
+.rail a:hover em, .rail a.on em { opacity: 1; transform: none; }
+.rail a.on { color: var(--signal); }
+.rail a:hover { color: var(--ink); }
+
+/* ---------- hero: the person standing on the name ---------- */
+.hero { position: relative; min-height: max(100svh, 760px); overflow: hidden; isolation: isolate; }
+.hero::before { content: ""; position: absolute; left: 50%; top: 18%; width: min(70vw, 900px); aspect-ratio: 1; translate: -50% 0; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 91, 46, 0.16), rgba(255, 91, 46, 0.04) 55%, transparent 72%); }
+.intro, .board { position: relative; z-index: 3; }
+.hero-grid { padding-top: max(128px, 15svh); display: grid; grid-template-columns: minmax(0, 360px) 1fr minmax(0, 300px); gap: 32px; align-items: start; }
+.intro .label { margin-bottom: 18px; }
+.intro p.lede { font: 500 clamp(22px, 1.9vw, 27px)/1.3 var(--display); letter-spacing: -0.01em; color: var(--ink); }
+.intro p.sub { margin-top: 16px; color: var(--soft); font-size: 15px; }
+.typed { color: var(--signal); font-weight: 600; white-space: nowrap; }
+.caret { display: inline-block; width: 2px; height: 1.05em; background: var(--signal); vertical-align: -0.15em; margin-left: 2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.intro .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.status { font-size: 13px; color: var(--muted); min-height: 1.4em; margin-top: 10px; }
+.board { grid-column: 3; background: rgba(20, 20, 18, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; padding: 20px; box-shadow: inset 0 0 0 1px var(--line); }
+.board .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; font-size: 14px; }
+.board .row + .row { box-shadow: 0 -1px 0 var(--line); }
+.board .k { color: var(--muted); }
+.board .v { font-weight: 500; text-align: right; }
+.board .clock { font: 700 34px/1 var(--display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.board .live { display: inline-flex; align-items: center; gap: 8px; }
+.board .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; animation: ping 2.2s infinite; }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(61, 220, 132, .55); } 70%, 100% { box-shadow: 0 0 0 8px rgba(61, 220, 132, 0); } }
+.board .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.board .nums div { background: var(--raise-2); border-radius: 12px; padding: 12px 10px; }
+.board .nums b { display: block; font: 700 26px/1 var(--display); font-variant-numeric: tabular-nums; }
+.board .nums span { display: block; margin-top: 6px; font-size: 11.5px; line-height: 1.3; color: var(--muted); }
+/* the person stands behind the name: the letters cover the legs */
+.figure { position: absolute; z-index: 1; left: 50%; bottom: 4.5vw; translate: -50% 0; height: min(80svh, 920px); aspect-ratio: 1 / 1.25; pointer-events: none; -webkit-mask-image: linear-gradient(#000 80%, transparent 99%); mask-image: linear-gradient(#000 80%, transparent 99%); }
+.figure img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.name { position: absolute; z-index: 2; left: 0; right: 0; bottom: 1.6vw; text-align: center; font: 800 clamp(56px, 13.2vw, 240px)/0.8 var(--display); font-variation-settings: "opsz" 96, "wdth" 75; letter-spacing: -0.012em; text-transform: uppercase; white-space: nowrap; }
+.name .l { display: inline-block; overflow: hidden; padding-bottom: .02em; }
+.name span { display: inline-block; }
+.name .last { color: var(--signal); }
+.hero-foot { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 1px; }
+/* entrance */
+.js .name .l > span { transform: translateY(110%); transition: transform 1.1s var(--ease); }
+.js .figure { opacity: 0; transform: translateY(60px) scale(.98); transition: opacity 1.2s var(--ease) .25s, transform 1.4s var(--ease) .25s; }
+.js .intro, .js .board { opacity: 0; transform: translateY(16px); transition: opacity .9s var(--ease) .7s, transform .9s var(--ease) .7s; }
+.ready .name .l > span { transform: none; }
+.ready .name .l + .l > span { transition-delay: .1s; }
+.ready .figure, .ready .intro, .ready .board { opacity: 1; transform: none; }
+
+/* ---------- section heads ---------- */
+section { padding-block: 140px 40px; overflow-x: clip; } /* clip, not hidden: sticky parts keep working */
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 40px; align-items: end; margin-bottom: 56px; }
+.head h2 { font-size: clamp(40px, 5.4vw, 76px); max-width: 15ch; margin-top: 18px; }
+.head p { color: var(--soft); }
+
+/* ---------- work: pinned reel, then the full index ---------- */
+.reel { position: relative; height: 420vh; }
+.reel .stick { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding-top: 64px; }
+.reel .head { margin-bottom: 28px; }
+.reel .head h2 { font-size: clamp(34px, 3.8vw, 56px); max-width: 22ch; }
+.track { display: flex; gap: 28px; padding-left: max(var(--pad), calc((100vw - var(--wrap)) / 2)); will-change: transform; }
+/* panel width follows the window height so the picture and its caption always fit on screen */
+.panel { flex: none; width: min(74vw, 900px, calc((100svh - 400px) * 1.78)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.panel .shot { position: relative; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; background: var(--raise); }
+.panel .shot img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 1.2s var(--ease); }
+.panel:hover .shot img { transform: scale(1.03); }
+.panel .meta { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 16px; align-items: baseline; }
+.panel .no { font: 700 15px var(--display); color: var(--signal); font-variant-numeric: tabular-nums; }
+.panel h3 { font-size: clamp(26px, 2.6vw, 38px); }
+.panel p { color: var(--soft); font-size: 15px; margin-top: 6px; max-width: 56ch; }
+.panel .go { font-weight: 600; font-size: 14px; text-decoration: none; display: inline-flex; gap: 8px; align-items: center; white-space: nowrap; }
+.panel .go:hover { color: var(--signal); }
+.rail.away { opacity: 0; pointer-events: none; }
+.rail { transition: opacity .3s var(--ease); }
+.reel .count { position: absolute; right: max(var(--pad), calc((100vw - var(--wrap)) / 2)); top: 92px; font: 600 13px var(--text); color: var(--muted); font-variant-numeric: tabular-nums; }
+.reel .count b { color: var(--ink); }
+/* placeholder until the real picture is dropped in */
+.ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 16px; background: radial-gradient(120% 90% at 30% 20%, #1f1d1a, #121210); }
+.ph::after { content: ""; position: absolute; inset: 14px; border-radius: 12px; border: 1px dashed rgba(244, 241, 234, 0.14); }
+.ph b { font: 800 clamp(26px, 4vw, 64px)/1 var(--display); font-variation-settings: "opsz" 96, "wdth" 75; letter-spacing: -0.02em; color: var(--soft); text-transform: uppercase; }
+.ph small { font-size: 12px; color: var(--muted); }
+
+.index { padding-top: 60px; }
+.index-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+.index-head h3 { font-size: clamp(26px, 2.6vw, 36px); }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.filters button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--raise); color: var(--muted); font: 500 13px var(--text); cursor: pointer; transition: background-color .2s, color .2s; }
+.filters button sup { font-size: 10px; margin-left: 3px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { box-shadow: 0 -1px 0 var(--line); }
+.list li:last-child { box-shadow: 0 -1px 0 var(--line), 0 1px 0 var(--line); }
+.list .item { display: grid; grid-template-columns: 44px minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 0.8fr) 24px; gap: 18px; align-items: center; min-height: 64px; padding: 12px 6px; text-decoration: none; transition: background-color .25s var(--ease), padding .3s var(--ease); }
+.list a.item:hover, .list a.item:focus-visible, .list div.item:hover { background: var(--raise); padding-left: 16px; }
+.list .n { font: 600 13px var(--text); color: var(--muted); font-variant-numeric: tabular-nums; }
+.list h4 { font-size: clamp(19px, 1.7vw, 24px); font-weight: 600; letter-spacing: -0.015em; }
+.list .c { color: var(--soft); font-size: 14px; }
+.list .r { color: var(--muted); font-size: 14px; }
+.list .arrow { color: var(--muted); }
+.list a.item:hover .arrow { color: var(--signal); }
+.list li[hidden] { display: none; }
+.peek { position: fixed; z-index: 30; left: 0; top: 0; width: 300px; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(.9); transition: opacity .2s var(--ease), transform .25s var(--ease); background: var(--raise); box-shadow: 0 30px 60px rgba(0, 0, 0, .5); } /* taste-skill-ignore: floating preview needs lift off the list */
+.peek.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.peek img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+/* ---------- how I build: pinned terminal ---------- */
+.how-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 64px; }
+.steps .step { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; gap: 14px; max-width: 36ch; }
+.steps .step .label b { transition: color .3s; }
+.steps .step h3 { font-size: clamp(28px, 3vw, 42px); color: #4b4943; transition: color .35s var(--ease); }
+.steps .step.on h3 { color: var(--ink); }
+.steps .step p { color: var(--soft); }
+.stage { position: sticky; top: 16vh; align-self: start; }
+.term { background: #0f0f0e; border-radius: 18px; padding: 18px 24px 26px; color: #ecebe6; font: 400 14px/1.8 ui-monospace, "Cascadia Mono", Consolas, monospace; min-height: 460px; box-shadow: inset 0 0 0 1px var(--line); }
+.term .bar { color: var(--muted); margin-bottom: 14px; display: flex; justify-content: space-between; gap: 12px; padding-bottom: 12px; box-shadow: 0 1px 0 var(--line); }
+.term .bar i { font-style: normal; display: inline-flex; gap: 6px; margin-right: 12px; }
+.term .bar i::before, .term .bar i::after, .term .bar i b { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #2a2926; display: inline-block; }
+.term .state { display: none; white-space: pre-wrap; margin: 0; font: inherit; }
+.term code { font: inherit; }
+.term .state.on { display: block; animation: rise .45s var(--ease); }
+.term .ok { color: #7fd3a6; }
+.term .dim { color: var(--muted); }
+.term .hl { color: #ffb08f; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------- toolkit: tiles lit by group ---------- */
+.groups { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.groups button { min-height: 40px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--raise); color: var(--soft); font: 500 14px var(--text); cursor: pointer; transition: background-color .2s, color .2s; }
+.groups button[aria-pressed="true"] { background: var(--signal); color: var(--signal-ink); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.tile { min-height: 92px; padding: 14px; border-radius: 14px; background: var(--raise); display: flex; flex-direction: column; justify-content: space-between; transition: opacity .35s var(--ease), transform .35s var(--ease), background-color .35s var(--ease); }
+.tile b { font: 600 16px/1.2 var(--display); letter-spacing: -0.01em; }
+.tile small { font-size: 11.5px; color: var(--muted); }
+.tiles.filtered .tile { opacity: .18; transform: scale(.97); }
+.tiles.filtered .tile.lit { opacity: 1; transform: none; background: var(--raise-2); }
+.tiles.filtered .tile.lit small { color: var(--signal); }
+
+/* ---------- path: about + commit-graph career ---------- */
+.about { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 48px; align-items: start; margin-bottom: 80px; }
+.portrait { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 4 / 5; background: var(--raise); }
+.portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; filter: grayscale(.15) contrast(1.05); }
+.portrait::after { content: ""; position: absolute; inset: 55% 0 0; background: linear-gradient(transparent, rgba(0, 0, 0, .7)); }
+.portrait figcaption { position: absolute; z-index: 1; left: 14px; bottom: 12px; font-size: 12.5px; color: #fff; }
+.about-text p { font: 400 clamp(19px, 1.6vw, 23px)/1.45 var(--display); letter-spacing: -0.005em; color: var(--soft); max-width: 40ch; }
+.about-text p + p { margin-top: 18px; }
+.about-text strong { color: var(--ink); font-weight: 600; }
+.about-text .edu { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 10px; }
+.graph { position: relative; }
+.graph svg { position: absolute; left: 0; top: 0; width: 80px; height: 100%; overflow: visible; pointer-events: none; }
+.graph svg path { fill: none; stroke-width: 2; stroke-linecap: round; }
+.graph .main { stroke: rgba(244, 241, 234, 0.22); }
+.graph .branch { stroke: rgba(255, 91, 46, 0.6); }
+.commit { position: relative; display: grid; grid-template-columns: 80px minmax(0, 1fr) auto; gap: 18px; padding-block: 18px 30px; }
+.commit .dot { position: absolute; top: 24px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 2px var(--ink); left: 13px; }
+.commit[data-lane="2"] .dot { left: 45px; box-shadow: inset 0 0 0 2px var(--signal); }
+.commit .msg { grid-column: 2; }
+.commit .type { font: 500 13px var(--text); color: var(--muted); }
+.commit .type b { color: var(--signal); font-weight: 600; }
+.commit h3 { font-size: clamp(22px, 2.2vw, 30px); margin: 6px 0 4px; letter-spacing: -0.02em; }
+.commit .org { color: var(--soft); font-size: 15px; }
+.commit ul { margin: 12px 0 0; padding-left: 18px; color: var(--soft); display: grid; gap: 6px; max-width: 66ch; font-size: 15px; }
+.commit time { grid-column: 3; font: 600 14px var(--text); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; padding-top: 4px; }
+
+/* ---------- hire: build your brief ---------- */
+.pipeline { list-style: none; margin: 0 0 56px; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: s; }
+.pipeline li { position: relative; padding: 22px 20px 0 0; }
+.pipeline li::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--line); }
+.pipeline li::after { content: ""; position: absolute; left: 0; top: -5px; width: 12px; height: 12px; border-radius: 50%; background: var(--signal); }
+.pipeline .label { margin-bottom: 8px; }
+.pipeline h4 { font-size: 21px; margin-bottom: 6px; letter-spacing: -0.015em; }
+.pipeline p { color: var(--muted); font-size: 14.5px; max-width: 30ch; }
+.hire-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.needs h3 { font-size: clamp(26px, 2.6vw, 36px); margin-bottom: 8px; }
+.needs > p { color: var(--soft); margin-bottom: 22px; }
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.opt { text-align: left; border: 0; border-radius: 14px; background: var(--raise); padding: 16px; cursor: pointer; display: grid; gap: 6px; transition: background-color .2s var(--ease), box-shadow .2s var(--ease), transform .2s var(--ease); }
+.opt:hover { transform: translateY(-2px); }
+.opt b { font: 600 17px/1.2 var(--display); letter-spacing: -0.01em; display: flex; justify-content: space-between; gap: 8px; }
+.opt b::after { content: "+"; color: var(--muted); font-family: var(--text); font-weight: 500; transition: transform .25s var(--ease), color .2s; }
+.opt span { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+.opt[aria-pressed="true"] { background: var(--raise-2); box-shadow: inset 0 0 0 1.5px var(--signal); }
+.opt[aria-pressed="true"] b::after { transform: rotate(45deg); color: var(--signal); }
+.reach { margin-top: 28px; display: grid; gap: 10px; }
+.reach .line { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0; box-shadow: 0 -1px 0 var(--line); font-size: 15px; text-decoration: none; background: none; border: 0; width: 100%; text-align: left; cursor: pointer; }
+.reach .line span:first-child { color: var(--muted); }
+.reach .line b { font-weight: 500; overflow-wrap: anywhere; text-align: right; }
+.reach .line:hover b { color: var(--signal); }
+form.brief { background: var(--raise); border-radius: 20px; padding: 28px; display: grid; gap: 16px; }
+.brief .label { justify-content: space-between; }
+.field { display: grid; gap: 8px; }
+.field label { font: 500 13px var(--text); color: var(--muted); }
+.field input, .field textarea { width: 100%; border: 0; border-radius: 12px; background: var(--raise-2); color: var(--ink); font: 400 16px var(--text); padding: 14px 16px; box-shadow: inset 0 0 0 1px transparent; transition: box-shadow .2s; }
+.field textarea { min-height: 160px; resize: vertical; line-height: 1.5; }
+.field input:focus, .field textarea:focus { outline: none; box-shadow: inset 0 0 0 1.5px var(--signal); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+form .btn { justify-content: center; width: 100%; min-height: 54px; }
+form .note { font-size: 13px; color: var(--muted); text-align: center; }
+
+/* ---------- footer ---------- */
+footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
+.sign { font: 800 clamp(64px, 15.5vw, 260px)/0.8 var(--display); font-variation-settings: "opsz" 96, "wdth" 75; letter-spacing: -0.04em; text-transform: uppercase; color: var(--raise-2); white-space: nowrap; text-align: center; margin-bottom: 28px; user-select: none; }
+.base { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); }
+.base nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.base a { text-decoration: none; color: var(--soft); }
+.base a:hover { color: var(--signal); }
+
+/* scroll reveals; content stays visible without script */
+.js .rv { opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: var(--d, 0ms); }
+.js .rv.in { opacity: 1; transform: none; }
+
+@media (max-width: 1280px) { .rail { display: none; } }
+@media (max-width: 1100px) {
+  .hero-grid { grid-template-columns: minmax(0, 340px) 1fr minmax(0, 270px); }
+  .opts { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .hero { min-height: 0; padding-bottom: 0; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); padding-top: 96px; gap: 0; }
+  .board { grid-column: auto; order: 3; margin: 0 0 32px; }
+  .intro { order: 1; }
+  .figure-wrap { order: 2; position: relative; height: min(118vw, 600px); margin: 8px calc(var(--pad) * -1) 24px; overflow: hidden; }
+  .figure { position: absolute; bottom: 9vw; height: 100%; }
+  .name { font-size: 16.4vw; bottom: 0; }
+  .typed { white-space: normal; }
+  .edu .chip { white-space: normal; min-height: 0; padding-block: 6px; }
+  .head, .how-grid, .about, .hire-grid { grid-template-columns: minmax(0, 1fr); }
+  .head { gap: 16px; }
+  .reel { height: auto; }
+  .reel .stick { position: static; height: auto; overflow: visible; }
+  .track { overflow-x: auto; scroll-snap-type: x mandatory; padding-right: var(--pad); padding-bottom: 8px; transform: none !important; scrollbar-width: none; }
+  .track::-webkit-scrollbar { display: none; }
+  .panel { width: 84vw; scroll-snap-align: start; }
+  .panel .meta { grid-template-columns: 40px minmax(0, 1fr); }
+  .panel .go { grid-column: 2; }
+  .reel .count { display: none; }
+  .list .item { grid-template-columns: 34px minmax(0, 1fr) 20px; gap: 4px 12px; }
+  .list .c, .list .r { grid-column: 2; }
+  .list .arrow { grid-column: 3; grid-row: 1; }
+  .peek { display: none; }
+  .stage { position: sticky; top: 64px; z-index: 1; }
+  .term { min-height: 0; height: 42svh; overflow: hidden; font-size: 12.5px; padding: 14px 16px; }
+  .steps .step { min-height: 52svh; }
+  .about { gap: 28px; }
+  .portrait { max-width: 320px; }
+  .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; }
+  .commit { grid-template-columns: 80px minmax(0, 1fr); }
+  .commit time { grid-column: 2; grid-row: 1; padding: 0; margin-bottom: -6px; }
+  .commit .msg { grid-row: 2; }
+}
+@media (min-width: 901px) { .figure-wrap { display: contents; } }
+@media (max-width: 600px) {
+  :root { --pad: max(20px, env(safe-area-inset-left, 0px)); }
+  section { padding-block: 100px 24px; }
+  .pair, .pipeline { grid-template-columns: minmax(0, 1fr); }
+  form.brief { padding: 20px; }
+  .commit { grid-template-columns: 64px minmax(0, 1fr); }
+  .graph svg { width: 64px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
+  .js .rv, .js .figure, .js .intro, .js .board, .js .name .l > span { opacity: 1; transform: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M4 12 12 4M5.5 4H12v6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="top">
+  <a class="mark" href="#top" aria-label="Cristian Jupia, back to top">cj<i>.</i></a>
+  <a class="btn" href="#hire">Start a brief <svg><use href="#i-arrow"/></svg></a>
+</div>
+<nav class="rail" aria-label="Sections">
+  <a href="#work"><em>01 Work</em></a>
+  <a href="#build"><em>02 How I build</em></a>
+  <a href="#toolkit"><em>03 Toolkit</em></a>
+  <a href="#path"><em>04 Path</em></a>
+  <a href="#hire"><em>05 Hire</em></a>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="intro">
+      <p class="label"><b>Technical Lead</b> WordPress Developer · Metro Manila</p>
+      <p class="lede">I take systems from the first brief to a tested production release, and I lead and build <span class="typed" id="typed">government systems.</span><span class="caret" aria-hidden="true"></span></p>
+      <p class="sub">11+ years across UI/UX, full-stack and DevOps, now shipping faster with Claude Code.</p>
+      <div class="actions">
+        <a class="btn" href="#work">See shipped work <svg><use href="#i-arrow"/></svg></a>
+        <a class="btn ghost" href="Cristian-Jupia-Resume.pdf" data-resume><svg><use href="#i-down"/></svg>Resume</a>
+      </div>
+      <p class="status" id="copy-status" aria-live="polite"></p>
+    </div>
+    <div class="figure-wrap">
+      <div class="figure"><img src="portfolio-assets/cristian-cutout.webp" width="1200" height="1979" alt="Cristian Jupia in a white shirt and jeans" fetchpriority="high"></div>
+      <h1 class="name"><span class="l"><span>Cristian</span></span> <span class="l"><span class="last">Jupia</span></span></h1>
+    </div>
+    <aside class="board" aria-label="Status">
+      <div class="row"><span class="k">Manila time</span><span class="clock" id="clock">--:--</span></div>
+      <div class="row"><span class="k">Status</span><span class="v live">Open to roles &amp; projects</span></div>
+      <div class="row"><span class="k">Now shipping</span><span class="v">Jups Fintrack</span></div>
+      <div class="nums">
+        <div><b data-count="11">11</b><span>years on the web</span></div>
+        <div><b data-count="20">20</b><span>sites delivered</span></div>
+        <div><b data-count="6">6</b><span>government systems</span></div>
+      </div>
+    </aside>
+  </div>
+</header>
+
+<main>
+<section id="work" class="reel" aria-labelledby="work-h" style="padding-block: 0">
+  <div class="stick">
+    <div class="wrap head rv">
+      <div><p class="label"><b>01</b> Work</p><h2 id="work-h">Shipped, from city halls to <span class="accent">clinics abroad.</span></h2></div>
+      <p>Five builds that show the range. Scroll on and the reel moves sideways; the full index of all 20 follows.</p>
+    </div>
+    <div class="track" id="track">
+      <article class="panel">
+        <div class="shot"><img src="portfolio-assets/empleo.jpg" width="1280" height="800" alt="Empleo website with the attendance and payroll dashboard" loading="lazy"></div>
+        <div class="meta"><span class="no">01</span><div><h3>Empleo</h3><p>All-in-one HR for Philippine businesses: attendance, payroll and employee records, on the web and on phones. Live SaaS, Technical Lead.</p></div><a class="go" href="https://empleospace.com/">Visit <svg class="arrow"><use href="#i-arrow"/></svg></a></div>
+      </article>
+      <article class="panel">
+        <div class="shot"><div class="ph" role="img" aria-label="Image placeholder for EDPPAS"><b>EDPPAS</b><small>Image placeholder · edppas.jpg</small></div></div>
+        <div class="meta"><span class="no">02</span><div><h3>EDPPAS · PNP</h3><p>A mobile clock-in app for the Philippine National Police that keeps recording attendance without signal and syncs once back online. Technical Lead.</p></div></div>
+      </article>
+      <article class="panel">
+        <div class="shot"><img src="portfolio-assets/smallbiz.jpg" width="1280" height="800" alt="Small Biz Optimize website" loading="lazy"></div>
+        <div class="meta"><span class="no">03</span><div><h3>Small Biz Optimize</h3><p>A business-advisory website for an Australian consultancy, designed and built from scratch in WordPress.</p></div><a class="go" href="https://smallbizoptimize.com/">Visit <svg class="arrow"><use href="#i-arrow"/></svg></a></div>
+      </article>
+      <article class="panel">
+        <div class="shot"><img src="portfolio-assets/hydrogenman.jpg" width="1280" height="800" alt="Hydrogenman Solutions website" loading="lazy"></div>
+        <div class="meta"><span class="no">04</span><div><h3>Hydrogenman</h3><p>An online store for hydrogen water and wellness products. Contributor at Ayahtek.</p></div><a class="go" href="https://hydrogenmansolutions.com/">Visit <svg class="arrow"><use href="#i-arrow"/></svg></a></div>
+      </article>
+      <article class="panel">
+        <div class="shot"><img src="portfolio-assets/kor.jpg" width="1280" height="800" alt="Kopen Ruilen web shop" loading="lazy"></div>
+        <div class="meta"><span class="no">05</span><div><h3>Kopen Ruilen</h3><p>A Dutch buy-and-swap web shop built with WordPress and WooCommerce.</p></div><a class="go" href="https://kor.brandmerk-reclame.nl/">Visit <svg class="arrow"><use href="#i-arrow"/></svg></a></div>
+      </article>
+    </div>
+    <p class="count" aria-hidden="true"><b id="reel-at">01</b> / 05</p>
+  </div>
+</section>
+
+<section class="index" aria-labelledby="index-h" style="padding-top: 80px">
+  <div class="wrap">
+    <div class="index-head rv">
+      <h3 id="index-h">The full index</h3>
+      <div class="filters" role="group" aria-label="Filter projects">
+        <button type="button" data-filter="all" aria-pressed="true">All<sup>20</sup></button>
+        <button type="button" data-filter="gov" aria-pressed="false">Government<sup>6</sup></button>
+        <button type="button" data-filter="product" aria-pressed="false">Products<sup>5</sup></button>
+        <button type="button" data-filter="wp" aria-pressed="false">WordPress<sup>9</sup></button>
+      </div>
+    </div>
+    <ol class="list rv" id="list">
+      <li data-cat="product"><a class="item" href="https://empleospace.com/" data-img="empleo"><span class="n">01</span><h4>Empleo</h4><span class="c">HR, attendance &amp; payroll SaaS</span><span class="r">Tech Lead · Live</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="gov"><div class="item" data-ph="EDPPAS"><span class="n">02</span><h4>EDPPAS</h4><span class="c">PNP · offline-first clock-in app</span><span class="r">Tech Lead</span></div></li>
+      <li data-cat="gov"><div class="item" data-ph="PPOAS"><span class="n">03</span><h4>PPOAS</h4><span class="c">PNP · Pensioner Online Accounting</span><span class="r">Tech Lead</span></div></li>
+      <li data-cat="gov"><div class="item" data-ph="PARPS"><span class="n">04</span><h4>PARPS</h4><span class="c">PNP · Automated Retirement Processing</span><span class="r">Tech Lead</span></div></li>
+      <li data-cat="gov"><div class="item" data-ph="LBCOOP"><span class="n">05</span><h4>LBCOOP</h4><span class="c">PNP · cooperative management system</span><span class="r">Tech Lead</span></div></li>
+      <li data-cat="gov"><div class="item" data-ph="DOJ CMS"><span class="n">06</span><h4>CMS</h4><span class="c">DOJ · Case Monitoring System</span><span class="r">Tech Lead</span></div></li>
+      <li data-cat="gov"><div class="item" data-ph="OPCAS"><span class="n">07</span><h4>OPCAS</h4><span class="c">DOJ · Prosecutor Clearance Automation</span><span class="r">Tech Lead</span></div></li>
+      <li data-cat="product"><a class="item" href="https://liftnowph.com/" data-img="liftnow"><span class="n">08</span><h4>Liftnow</h4><span class="c">Water brand funding scholarships</span><span class="r">Contributor</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="product"><a class="item" href="https://elvion.ayahtek.com/" data-img="elvion"><span class="n">09</span><h4>Elvion</h4><span class="c">Natural skincare platform · Ayahtek</span><span class="r">Contributor</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="product"><a class="item" href="https://hydrogenmansolutions.com/" data-img="hydrogenman"><span class="n">10</span><h4>Hydrogenman</h4><span class="c">Hydrogen water &amp; wellness store · Ayahtek</span><span class="r">Contributor</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://smallbizoptimize.com/" data-img="smallbiz"><span class="n">11</span><h4>Small Biz Optimize</h4><span class="c">WordPress · Australia</span><span class="r">Built from scratch</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://obesity.karmicartworks.agency/" data-ph="EPWORTH"><span class="n">12</span><h4>Epworth Centre</h4><span class="c">WordPress · Australia</span><span class="r">Built from scratch</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://ayahtek.com/" data-img="ayahtek"><span class="n">13</span><h4>ayahtek.com</h4><span class="c">WordPress · Philippines</span><span class="r">Built from scratch</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://torosroadworthy.com.au/" data-img="toros"><span class="n">14</span><h4>Toros Roadworthy</h4><span class="c">WordPress · Australia</span><span class="r">Developed</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://thuiszorgdezonnekracht.nl/" data-img="zonnekracht"><span class="n">15</span><h4>De Zonnekracht</h4><span class="c">WordPress · Netherlands</span><span class="r">Developed</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://kor.brandmerk-reclame.nl/" data-img="kor"><span class="n">16</span><h4>Kopen Ruilen</h4><span class="c">WordPress &amp; WooCommerce · Netherlands</span><span class="r">Developed</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://lunarnest.com.au/" data-ph="LUNAR NEST"><span class="n">17</span><h4>lunarnest.com.au</h4><span class="c">WordPress · Australia</span><span class="r">Redesigned</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://karmicartworks.com.au/" data-img="karmic"><span class="n">18</span><h4>Karmic Artworks</h4><span class="c">WordPress · Australia</span><span class="r">Maintenance &amp; UI</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="wp"><a class="item" href="https://brandmerk-reclame.nl/" data-img="brandmerk"><span class="n">19</span><h4>Brandmerk Reclame</h4><span class="c">WordPress · Netherlands</span><span class="r">Maintenance</span><svg class="arrow"><use href="#i-arrow"/></svg></a></li>
+      <li data-cat="product"><div class="item" data-ph="SIKLAB"><span class="n">20</span><h4>Siklab</h4><span class="c">Custom songs written by musicians</span><span class="r">Retired</span></div></li>
+    </ol>
+  </div>
+  <div class="peek" id="peek" aria-hidden="true"></div>
+</section>
+
+<section id="build" aria-labelledby="build-h">
+  <div class="wrap">
+    <div class="head rv">
+      <div><p class="label"><b>02</b> How I build</p><h2 id="build-h">An AI agent writes. <span class="accent">I review every line.</span></h2></div>
+      <p>My Claude Code workflow, shown on Jups Fintrack: a full-stack finance app that went from first commit to daily use in 4 days.</p>
+    </div>
+    <div class="how-grid">
+      <div class="steps">
+        <div class="step on" data-state="0"><p class="label"><b>Step 1</b></p><h3>Start from memory.</h3><p>Each project has a CLAUDE.md and a vault note of decisions and gotchas, so the agent resumes with full context.</p></div>
+        <div class="step" data-state="1"><p class="label"><b>Step 2</b></p><h3>Build with the agent, review each change.</h3><p>Typecheck after every edit, 16 commits in all, and nothing merges that I haven't read.</p></div>
+        <div class="step" data-state="2"><p class="label"><b>Step 3</b></p><h3>Test in a real browser before it ships.</h3><p>The agent drives the browser through MCP at phone and desktop widths, and test runs must leave the data unchanged.</p></div>
+      </div>
+      <div class="stage">
+        <div class="term" role="img" aria-label="Claude Code session showing the current step">
+          <div class="bar"><span><i><b></b></i>claude · jups-finance-tracker</span><span id="term-step">1 / 3</span></div>
+<pre class="state on"><code><span class="dim">&gt; resume work on the savings page</span>
+
+<span class="hl">Reading</span> CLAUDE.md
+<span class="hl">Reading</span> vault/Projects/JUPS Finance Tracker.md
+  · Savings tiles count transferred entries only
+  · Never call a hook inside a &amp;&amp; expression
+  · Check port 4000 before restarting the server
+
+<span class="ok">Context loaded.</span> Code wins over notes.</code></pre>
+<pre class="state"><code><span class="dim">&gt; add per-account "include in total"</span>
+
+<span class="hl">Edit</span>   server/src/db.ts      + migration
+<span class="hl">Edit</span>   server/src/insights.ts
+<span class="hl">Edit</span>   client/src/pages/Savings.tsx
+<span class="hl">Run</span>    npm run typecheck   <span class="ok">passed</span>
+
+<span class="dim">16 commits · first commit to daily use: 4 days</span></code></pre>
+<pre class="state"><code><span class="dim">&gt; test every confirm dialog</span>
+
+<span class="hl">Browser</span> 390px phone      <span class="ok">ok</span>
+<span class="hl">Browser</span> 1440px desktop   <span class="ok">ok</span>
+<span class="hl">Dialogs</span> 16 of 16 cancelled <span class="ok">ok</span>
+<span class="hl">Data</span>    table hashes before = after <span class="ok">ok</span>
+
+<span class="ok">Ready to ship.</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="toolkit" aria-labelledby="tool-h">
+  <div class="wrap">
+    <div class="head rv">
+      <div><p class="label"><b>03</b> Toolkit</p><h2 id="tool-h">One person, the whole stack.</h2></div>
+      <p>Pick a lane to light up the tools I use for it.</p>
+    </div>
+    <div class="groups rv" role="group" aria-label="Highlight a group">
+      <button type="button" data-g="all" aria-pressed="true">Everything</button>
+      <button type="button" data-g="ai" aria-pressed="false">Agentic coding</button>
+      <button type="button" data-g="wp" aria-pressed="false">WordPress</button>
+      <button type="button" data-g="fe" aria-pressed="false">Front-end</button>
+      <button type="button" data-g="be" aria-pressed="false">Back-end &amp; DevOps</button>
+      <button type="button" data-g="lead" aria-pressed="false">Leadership</button>
+    </div>
+    <div class="tiles rv" id="tiles">
+      <div class="tile" data-g="ai"><small>Agentic</small><b>Claude Code</b></div>
+      <div class="tile" data-g="ai"><small>Agentic</small><b>MCP</b></div>
+      <div class="tile" data-g="ai"><small>Agentic</small><b>Context engineering</b></div>
+      <div class="tile" data-g="ai"><small>Agentic</small><b>CLAUDE.md &amp; memory</b></div>
+      <div class="tile" data-g="ai"><small>Agentic</small><b>Custom skills</b></div>
+      <div class="tile" data-g="ai"><small>Agentic</small><b>Browser testing</b></div>
+      <div class="tile" data-g="wp"><small>WordPress</small><b>WordPress</b></div>
+      <div class="tile" data-g="wp"><small>WordPress</small><b>Elementor</b></div>
+      <div class="tile" data-g="wp"><small>WordPress</small><b>WooCommerce</b></div>
+      <div class="tile" data-g="wp"><small>WordPress</small><b>Custom themes</b></div>
+      <div class="tile" data-g="wp"><small>WordPress</small><b>Hosting &amp; speed</b></div>
+      <div class="tile" data-g="fe"><small>Front-end</small><b>React</b></div>
+      <div class="tile" data-g="fe"><small>Front-end</small><b>TypeScript</b></div>
+      <div class="tile" data-g="fe"><small>Front-end</small><b>Angular</b></div>
+      <div class="tile" data-g="fe"><small>Front-end</small><b>Vite</b></div>
+      <div class="tile" data-g="fe"><small>Front-end</small><b>Tailwind CSS</b></div>
+      <div class="tile" data-g="fe"><small>Front-end</small><b>PWA &amp; offline sync</b></div>
+      <div class="tile" data-g="be"><small>Back-end</small><b>Node.js</b></div>
+      <div class="tile" data-g="be"><small>Back-end</small><b>Express</b></div>
+      <div class="tile" data-g="be"><small>Back-end</small><b>PHP</b></div>
+      <div class="tile" data-g="be"><small>Back-end</small><b>MySQL</b></div>
+      <div class="tile" data-g="be"><small>DevOps</small><b>DigitalOcean</b></div>
+      <div class="tile" data-g="be"><small>DevOps</small><b>Ubuntu Linux</b></div>
+      <div class="tile" data-g="be"><small>DevOps</small><b>Git &amp; GitHub</b></div>
+      <div class="tile" data-g="lead"><small>Leadership</small><b>Technical lead</b></div>
+      <div class="tile" data-g="lead"><small>Leadership</small><b>Project management</b></div>
+      <div class="tile" data-g="lead"><small>Leadership</small><b>QA &amp; releases</b></div>
+      <div class="tile" data-g="lead"><small>Leadership</small><b>UI/UX design</b></div>
+    </div>
+  </div>
+</section>
+
+<section id="path" aria-labelledby="path-h">
+  <div class="wrap">
+    <div class="head rv">
+      <div><p class="label"><b>04</b> Path</p><h2 id="path-h">Eleven years, <span class="accent">one main branch.</span></h2></div>
+      <p>My career as a commit graph: the main line is full-time work, the orange branches ran alongside it.</p>
+    </div>
+    <div class="about">
+      <figure class="portrait rv" style="margin: 0"><img src="portfolio-assets/portrait.jpg" width="800" height="800" alt="Portrait of Cristian Jupia" loading="lazy"><figcaption>Cristian Jupia, Metro Manila</figcaption></figure>
+      <div class="about-text rv">
+        <p>I'm <strong>Cristian Jupia</strong>. I started as an intern drawing website layouts and grew into the person who <strong>leads the build, writes parts of it, tests it and deploys it.</strong></p>
+        <p>At Ayahtek that meant <strong>government systems for the PNP and DOJ</strong> and the company's own SaaS products, often as Project Manager and QA too. On the side, I build and look after WordPress sites for clients in <strong>Australia and the Netherlands</strong>.</p>
+        <div class="edu"><span class="chip">BS Information Technology · STI College Novaliches · 2015</span><span class="chip">TestDome · HTML/CSS &amp; JavaScript · 2020</span></div>
+      </div>
+    </div>
+    <div class="graph" id="graph">
+      <svg aria-hidden="true" id="graph-svg"></svg>
+      <div class="commit rv" data-lane="1"><span class="dot"></span><div class="msg"><p class="type"><b>lead:</b> Ayahtek Corp · also Project Manager &amp; QA</p><h3>Technical Lead</h3><ul><li>Led delivery of six government systems for the PNP and DOJ, built parts of each and deployed them to staging and production.</li><li>Led the company's products, including Empleo, and contributed to Liftnow, Elvion and Hydrogenman.</li><li>Kept DigitalOcean (Ubuntu) servers stable, fixed production issues and ran QA before every release.</li></ul></div><time>2022 – 2026</time></div>
+      <div class="commit rv" data-lane="2"><span class="dot"></span><div class="msg"><p class="type"><b>branch:</b> freelance · Australia &amp; the Netherlands</p><h3>WordPress Developer</h3><ul><li>Built sites from scratch, developed and redesigned others, and maintain live sites with Elementor and WooCommerce.</li></ul></div><time>Ongoing</time></div>
+      <div class="commit rv" data-lane="1"><span class="dot"></span><div class="msg"><p class="type"><b>feat:</b> Ayahtek Corp</p><h3>UI/UX Developer</h3><ul><li>Designed and built product interfaces, and developed the PRBS website in WordPress.</li></ul></div><time>2021 – 2022</time></div>
+      <div class="commit rv" data-lane="1"><span class="dot"></span><div class="msg"><p class="type"><b>lead:</b> Solutions Resource Inc.</p><h3>Associate Team Lead (SDE II)</h3><ul><li>Led front-end development of the Pioneer Insurance Assets and Management System in a three-person team, reviewed code and was the client's technical contact.</li></ul></div><time>2018 – 2020</time></div>
+      <div class="commit rv" data-lane="2"><span class="dot"></span><div class="msg"><p class="type"><b>branch:</b> TV5 Media Center · deployed by Solutions Resource</p><h3>Front-end Developer</h3><ul><li>Built features for News5 and developed TV5 Bilang Pilipino, the 2016 election portal with candidate profiles and live updates.</li></ul></div><time>2016 – 2018</time></div>
+      <div class="commit rv" data-lane="1"><span class="dot"></span><div class="msg"><p class="type"><b>feat:</b> Solutions Resource Inc. · started as an intern</p><h3>UI/UX Designer &amp; Front-end Developer</h3><ul><li>Designed and built 10+ websites, including the National Book Development Board, Gaffco Manila, BIZibility and ASPAC.</li></ul></div><time>2014 – 2020</time></div>
+      <div class="commit rv" data-lane="1"><span class="dot"></span><div class="msg"><p class="type"><b>init:</b> STI College Novaliches</p><h3>BS Information Technology</h3></div><time>2011 – 2015</time></div>
+    </div>
+  </div>
+</section>
+
+<section id="hire" aria-labelledby="hire-h">
+  <div class="wrap">
+    <div class="head rv">
+      <div><p class="label"><b>05</b> Hire</p><h2 id="hire-h">Build your brief. <span class="accent">I'll take it from there.</span></h2></div>
+      <p>Open to full-time roles, contracts and freelance projects. This is how a project with me runs.</p>
+    </div>
+    <ol class="pipeline rv">
+      <li><p class="label"><b>01</b> Brief</p><h4>Tell me what you need</h4><p>Your goals, your users and the date you want to go live.</p></li>
+      <li><p class="label"><b>02</b> Plan</p><h4>Scope and quote</h4><p>A clear scope, timeline and price before any work starts.</p></li>
+      <li><p class="label"><b>03</b> Build</p><h4>Preview on staging</h4><p>Regular previews, so you see progress early and often.</p></li>
+      <li><p class="label"><b>04</b> Ship</p><h4>Launch and support</h4><p>Production deployment, then fixes and updates as needed.</p></li>
+    </ol>
+    <div class="hire-grid">
+      <div class="needs rv">
+        <h3>What do you need?</h3>
+        <p>Pick one or more. Your choices go straight into the brief.</p>
+        <div class="opts" id="opts">
+          <button class="opt" type="button" aria-pressed="false" data-need="a WordPress website"><b>WordPress site</b><span>Elementor, WooCommerce or a custom theme, new or redesigned.</span></button>
+          <button class="opt" type="button" aria-pressed="false" data-need="a custom web system"><b>Custom system</b><span>Records, approvals and reports, from requirements to production.</span></button>
+          <button class="opt" type="button" aria-pressed="false" data-need="a SaaS product"><b>SaaS product</b><span>A multi-user web app like Empleo, planned, built and hosted.</span></button>
+          <button class="opt" type="button" aria-pressed="false" data-need="an offline-first mobile app"><b>Offline-first app</b><span>Keeps working without signal and syncs when back online.</span></button>
+          <button class="opt" type="button" aria-pressed="false" data-need="a technical lead for my team"><b>Technical lead</b><span>Leading the team, code review, project management and QA.</span></button>
+          <button class="opt" type="button" aria-pressed="false" data-need="maintenance and support"><b>Maintenance</b><span>Updates, fixes, server care and UI changes on live sites.</span></button>
+        </div>
+        <div class="reach">
+          <button class="line" type="button" id="copy-email"><span>Email · click to copy</span><b id="email-text">cristian.jupia13@gmail.com</b></button>
+          <a class="line" href="https://www.linkedin.com/in/cristian-jupia"><span>LinkedIn</span><b>linkedin.com/in/cristian-jupia</b></a>
+          <div class="line"><span>Based in</span><b>Metro Manila, Philippines</b></div>
+          <p class="status" id="copy-status-2" aria-live="polite"></p>
+        </div>
+      </div>
+      <form class="brief rv" id="brief" novalidate>
+        <p class="label"><span><b>Your brief</b></span><span id="brief-count">0 selected</span></p>
+        <div class="pair">
+          <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
+          <div class="field"><label for="f-mail">Your email</label><input id="f-mail" name="email" type="email" autocomplete="email" required></div>
+        </div>
+        <div class="field"><label for="f-msg">Project details</label><textarea id="f-msg" name="message" placeholder="Pick what you need on the left, then add your goals and deadline." required></textarea></div>
+        <button class="btn" type="submit">Send the brief <svg><use href="#i-arrow"/></svg></button>
+        <p class="note" id="form-status" aria-live="polite">Opens your email app with the brief ready to send.</p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <p class="sign" aria-hidden="true">Ship it.</p>
+  <div class="wrap base">
+    <span>© 2026 Cristian Jupia · Technical Lead &amp; WordPress Developer</span>
+    <nav aria-label="Footer"><a href="#work">Work</a><a href="#path">Path</a><a href="https://www.linkedin.com/in/cristian-jupia">LinkedIn</a><a href="Cristian-Jupia-Resume.pdf" data-resume>Resume</a><a href="#top">Back to top ↑</a></nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var EMAIL = "cristian.jupia13@gmail.com";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement;
+  root.classList.add("js");
+  requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.add("ready"); }); });
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return [].slice.call(document.querySelectorAll(s)); };
+
+  function copy(text, status, okMsg) {
+    var done = function () { status.textContent = okMsg || "Email copied."; setTimeout(function () { status.textContent = ""; }, 3000); };
+    var fail = function () {
+      var el = $("#email-text"), r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      status.textContent = "Copying is blocked here. The email is selected: press Ctrl+C.";
+    };
+    try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
+  }
+  $("#copy-email").addEventListener("click", function () { copy(EMAIL, $("#copy-status-2")); });
+
+  // resume: saved through the viewer's download prompt; without it the link just opens the PDF
+  var dl = null;
+  if (window.claude && claude.use) claude.use("downloads").then(function (d) { dl = d; }, function () {});
+  $$("[data-resume]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      if (!dl) return;
+      e.preventDefault();
+      fetch(a.getAttribute("href")).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); })
+        .then(function (blob) { return dl.save({ filename: "Cristian-Jupia-Resume.pdf", data: blob }); })
+        .catch(function (err) { if (!err || err.code !== "declined") $("#copy-status").textContent = "The download didn't start. Try the Resume button again."; });
+    });
+  });
+
+  // live: Manila time on the status board
+  var clock = $("#clock");
+  function tick() { try { clock.textContent = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Manila", hour: "2-digit", minute: "2-digit" }).format(new Date()); } catch (e) { clock.textContent = ""; } }
+  tick(); setInterval(tick, 15000);
+
+  // typing: cycle through what I build
+  var words = ["government systems.", "SaaS products.", "WordPress sites.", "offline-first apps."];
+  var typed = $("#typed");
+  if (!reduce) {
+    var wi = 0, ci = words[0].length, del = true;
+    setTimeout(function step() {
+      ci += del ? -1 : 1;
+      typed.textContent = words[wi].slice(0, ci);
+      if (del && ci === 0) { del = false; wi = (wi + 1) % words.length; }
+      else if (!del && ci === words[wi].length) { del = true; return setTimeout(step, 2200); }
+      setTimeout(step, del ? 38 : 75);
+    }, 2800);
+  }
+
+  // brief builder: chosen needs become the first line of the message
+  var opts = $$("#opts .opt"), msg = $("#f-msg"), count = $("#brief-count"), LEAD = "I need ";
+  opts.forEach(function (b) {
+    b.addEventListener("click", function () {
+      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      var picked = opts.filter(function (o) { return o.getAttribute("aria-pressed") === "true"; }).map(function (o) { return o.dataset.need; });
+      var rest = msg.value.split("\n").filter(function (l, i) { return !(i === 0 && l.indexOf(LEAD) === 0); }).join("\n").replace(/^\n+/, "");
+      var first = picked.length ? LEAD + (picked.length > 1 ? picked.slice(0, -1).join(", ") + " and " + picked[picked.length - 1] : picked[0]) + "." : "";
+      msg.value = first ? first + (rest ? "\n" + rest : "\n") : rest;
+      count.textContent = picked.length + " selected";
+    });
+  });
+  $("#brief").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var f = e.target, status = $("#form-status");
+    var name = f.name.value.trim(), mail = f.email.value.trim(), body = f.message.value.trim();
+    if (!name || !body || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
+      status.textContent = "Please add your name, a valid email and a few words about the project.";
+      (!name ? f.name : !body ? f.message : f.email).focus();
+      return;
+    }
+    var text = body + "\n\n" + name + "\n" + mail;
+    var href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Project brief from " + name) + "&body=" + encodeURIComponent(text);
+    var w = window.open(href, "_blank");
+    if (!w) location.href = href;
+    copy("To: " + EMAIL + "\n\n" + text, status, "Your mail app should open. The brief is also copied, in case it doesn't.");
+  });
+
+  // project index: filters, and a preview that follows the pointer
+  var filters = $$(".filters button"), rows = $$("#list li");
+  filters.forEach(function (b) {
+    b.addEventListener("click", function () {
+      filters.forEach(function (t) { t.setAttribute("aria-pressed", t === b ? "true" : "false"); });
+      rows.forEach(function (r) { r.hidden = !(b.dataset.filter === "all" || r.dataset.cat === b.dataset.filter); });
+    });
+  });
+  var peek = $("#peek"), px = 0, py = 0, cx = 0, cy = 0, peeking = false;
+  $$("#list .item").forEach(function (it) {
+    it.addEventListener("mouseenter", function () {
+      peek.innerHTML = it.dataset.img
+        ? '<img src="portfolio-assets/' + it.dataset.img + '.jpg" alt="">'
+        : '<div class="ph"><b>' + it.dataset.ph + '</b><small>Image placeholder</small></div>';
+      peek.classList.add("on"); peeking = true;
+    });
+    it.addEventListener("mouseleave", function () { peek.classList.remove("on"); peeking = false; });
+  });
+  window.addEventListener("mousemove", function (e) { px = e.clientX + 180; py = e.clientY; }, { passive: true });
+  (function follow() {
+    cx += (px - cx) * 0.18; cy += (py - cy) * 0.18;
+    if (peeking) peek.style.left = cx + "px", peek.style.top = cy + "px";
+    requestAnimationFrame(follow);
+  })();
+
+  // toolkit: light one lane
+  var groups = $$(".groups button"), tiles = $("#tiles"), tileEls = $$("#tiles .tile");
+  groups.forEach(function (b) {
+    b.addEventListener("click", function () {
+      groups.forEach(function (t) { t.setAttribute("aria-pressed", t === b ? "true" : "false"); });
+      tiles.classList.toggle("filtered", b.dataset.g !== "all");
+      tileEls.forEach(function (t) { t.classList.toggle("lit", t.dataset.g === b.dataset.g); });
+    });
+  });
+
+  // career graph: main line through lane 1, an orange loop out to lane 2 for each side branch
+  var graph = $("#graph"), svg = $("#graph-svg");
+  function drawGraph() {
+    var g = graph.getBoundingClientRect(), commits = $$("#graph .commit");
+    var pts = commits.map(function (c) { var d = c.querySelector(".dot").getBoundingClientRect(); return { lane: c.dataset.lane, x: d.left - g.left + d.width / 2, y: d.top - g.top + d.height / 2 }; });
+    var mains = pts.filter(function (p) { return p.lane === "1"; });
+    var x1 = mains[0].x, out = '<path class="main" d="M' + x1 + ' ' + mains[0].y + ' V' + mains[mains.length - 1].y + '"/>';
+    pts.forEach(function (p, i) {
+      if (p.lane !== "2") return;
+      var a = pts[i - 1] ? pts[i - 1].y : p.y - 60, b = pts[i + 1] ? pts[i + 1].y : p.y + 60, k = 26;
+      out += '<path class="branch" d="M' + x1 + ' ' + (a + 10) + ' C' + x1 + ' ' + (a + 10 + k) + ' ' + p.x + ' ' + (a + 10) + ' ' + p.x + ' ' + (a + 10 + k * 1.6) +
+        ' V' + (b - 10 - k * 1.6) + ' C' + p.x + ' ' + (b - 10) + ' ' + x1 + ' ' + (b - 10 - k) + ' ' + x1 + ' ' + (b - 10) + '"/>';
+    });
+    svg.setAttribute("height", g.height);
+    svg.innerHTML = out;
+  }
+
+  // reveals, staggered within their parent; board numbers count up
+  var items = $$(".rv");
+  items.forEach(function (el) {
+    var sibs = [].filter.call(el.parentNode.children, function (c) { return c.classList.contains("rv"); });
+    el.style.setProperty("--d", Math.min(sibs.indexOf(el), 6) * 80 + "ms");
+  });
+  function countUp(el) {
+    var end = +el.dataset.count, t0 = performance.now(), suffix = end > 5 ? "+" : "";
+    (function step(t) { var k = Math.min(1, (t - t0) / 1400); el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))) + (k === 1 ? suffix : ""); if (k < 1) requestAnimationFrame(step); })(t0);
+  }
+  var counts = $$("[data-count]");
+  if ("IntersectionObserver" in window && !reduce) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px" });
+    items.forEach(function (el) { io.observe(el); });
+    setTimeout(function () { counts.forEach(countUp); }, 900);
+  } else {
+    items.forEach(function (el) { el.classList.add("in"); });
+    counts.forEach(function (el) { el.textContent = el.dataset.count + (+el.dataset.count > 5 ? "+" : ""); });
+  }
+
+  // how I build: the step nearest the middle of the screen sets the session's state
+  var steps = $$(".step"), states = $$(".term .state"), stepLabel = $("#term-step");
+  function setStep(i) {
+    steps.forEach(function (s, j) { s.classList.toggle("on", j === i); });
+    states.forEach(function (s, j) { s.classList.toggle("on", j === i); });
+    stepLabel.textContent = (i + 1) + " / 3";
+  }
+
+  var railEl = $(".rail"), topBar = $(".top"), bar = $("#progress"), rail = $$(".rail a"), reel = $("#work"), track = $("#track"), reelAt = $("#reel-at");
+  var ticking = false;
+  function frame() {
+    ticking = false;
+    var vh = window.innerHeight, mid = vh / 2, best = 0, bestD = Infinity, doc = document.documentElement;
+    topBar.classList.toggle("scrolled", window.scrollY > 40);
+    bar.style.transform = "scaleX(" + (window.scrollY / Math.max(1, doc.scrollHeight - vh)) + ")";
+    steps.forEach(function (s, i) { var r = s.getBoundingClientRect(); var d = Math.abs(r.top + r.height / 2 - mid); if (d < bestD) { bestD = d; best = i; } });
+    setStep(best);
+    rail.forEach(function (a) {
+      var sec = document.querySelector(a.getAttribute("href")); if (!sec) return;
+      var r = sec.getBoundingClientRect(); a.classList.toggle("on", r.top < mid && r.bottom > mid);
+    });
+    // reel: vertical scroll through the pinned section slides the track sideways
+    if (window.innerWidth > 900) {
+      var r = reel.getBoundingClientRect(), run = r.height - vh;
+      railEl.classList.toggle("away", r.top < vh * 0.5 && r.bottom > vh * 0.5); // the reel runs edge to edge under the rail
+      var t = Math.max(0, Math.min(1, -r.top / Math.max(1, run)));
+      var dist = Math.max(0, track.scrollWidth - window.innerWidth + parseFloat(getComputedStyle(track).paddingLeft));
+      track.style.transform = "translateX(" + (-t * dist) + "px)";
+      reelAt.textContent = "0" + (Math.min(4, Math.round(t * 4)) + 1);
+    }
+  }
+  window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
+  window.addEventListener("resize", function () { frame(); drawGraph(); });
+  window.addEventListener("load", drawGraph);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawGraph);
+  frame(); drawGraph();
+})();
+</script>
+</body></html>
