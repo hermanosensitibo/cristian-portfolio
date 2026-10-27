@@ -1,5 +1,14 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body><title>Cristian Jupia Portfolio</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<script>
+/* set the theme before first paint: saved choice, else the system setting */
+(function () {
+  var t = null;
+  try { t = localStorage.getItem("theme"); } catch (e) {}
+  if (t !== "light" && t !== "dark") t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Geist:wght@400;500;600&display=swap">
@@ -16,14 +25,45 @@
   --ink: #f4f1ea;
   --soft: #cfcbc2;
   --muted: #8f8b82;
-  --signal: #ff5b2e;
-  --signal-ink: #160b07;
+  --signal: #2ecc71;
+  --signal-ink: #06190d;
   --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
   --text: "Geist", "Segoe UI", system-ui, sans-serif;
   --wrap: 1180px;
   --pad: max(24px, env(safe-area-inset-left, 0px));
   --ease: cubic-bezier(.2, .7, .2, 1);
+  --glass: rgba(11, 11, 10, 0.82);
+  --card: rgba(20, 20, 18, 0.72);
+  --line-strong: rgba(244, 241, 234, 0.22);
+  --dim: #4b4943;
+  --ph-a: #1f1d1a;
+  --ph-b: #121210;
 }
+/* light theme: warm paper; the signal goes darker so green text keeps its contrast */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f1ea;
+  --raise: #ebe6dc;
+  --raise-2: #e0dace;
+  --line: rgba(22, 20, 16, 0.12);
+  --ink: #161410;
+  --soft: #3b3832;
+  --muted: #6b665d;
+  --signal: #1e8449;
+  --signal-ink: #fff;
+  --glass: rgba(244, 241, 234, 0.85);
+  --card: rgba(255, 253, 249, 0.78);
+  --line-strong: rgba(22, 20, 16, 0.25);
+  --dim: #b4ada1;
+  --ph-a: #e6e0d4;
+  --ph-b: #d9d2c4;
+}
+.theme { width: 42px; height: 42px; display: inline-grid; place-items: center; border: 0; border-radius: 12px; background: var(--raise); color: var(--ink); cursor: pointer; transition: background-color .2s; }
+.theme:hover { background: var(--raise-2); }
+.theme svg { width: 18px; height: 18px; }
+.theme .sun, [data-theme="light"] .theme .moon { display: none; }
+[data-theme="light"] .theme .sun { display: block; }
+.top-actions { display: flex; gap: 8px; align-items: center; }
 * { box-sizing: border-box; }
 html { background: var(--bg); scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--text); overflow-x: clip; -webkit-font-smoothing: antialiased; }
@@ -40,7 +80,7 @@ button { font: inherit; color: inherit; }
 .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border: 0; border-radius: 12px; background: var(--signal); color: var(--signal-ink); font: 600 15px var(--text); text-decoration: none; cursor: pointer; transition: transform .2s var(--ease), filter .2s var(--ease); }
 .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
 .btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
-.btn.ghost:hover { box-shadow: inset 0 0 0 1px rgba(244, 241, 234, .3); filter: none; }
+.btn.ghost:hover { box-shadow: inset 0 0 0 1px var(--line-strong); filter: none; }
 .btn svg, .arrow { width: 14px; height: 14px; flex: none; transition: transform .2s var(--ease); }
 .btn:hover svg, a:hover > .arrow { transform: translate(2px, -2px); }
 .chip { display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 8px; background: var(--raise-2); font-size: 13px; color: var(--soft); white-space: nowrap; }
@@ -50,7 +90,7 @@ button { font: inherit; color: inherit; }
 /* ---------- chrome: scroll progress, top bar, stage rail ---------- */
 .progress { position: fixed; inset: 0 0 auto; height: 3px; z-index: 60; background: var(--signal); transform-origin: 0 50%; transform: scaleX(0); }
 .top { position: fixed; inset: 0 0 auto; z-index: 50; padding: 18px var(--pad); display: flex; justify-content: space-between; align-items: center; pointer-events: none; transition: background-color .3s var(--ease); }
-.top.scrolled { background: rgba(11, 11, 10, 0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.top.scrolled { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .top > * { pointer-events: auto; }
 .mark { display: inline-flex; align-items: baseline; font: 800 26px var(--display); letter-spacing: -0.04em; text-decoration: none; }
 .mark i { font-style: normal; color: var(--signal); }
@@ -67,7 +107,7 @@ button { font: inherit; color: inherit; }
 
 /* ---------- hero: the person standing on the name ---------- */
 .hero { position: relative; min-height: max(100svh, 760px); overflow: hidden; isolation: isolate; }
-.hero::before { content: ""; position: absolute; left: 50%; top: 18%; width: min(70vw, 900px); aspect-ratio: 1; translate: -50% 0; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 91, 46, 0.16), rgba(255, 91, 46, 0.04) 55%, transparent 72%); }
+.hero::before { content: ""; position: absolute; left: 50%; top: 18%; width: min(70vw, 900px); aspect-ratio: 1; translate: -50% 0; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(46, 204, 113, 0.14), rgba(46, 204, 113, 0.04) 55%, transparent 72%); }
 .intro, .board { position: relative; z-index: 3; }
 .hero-grid { padding-top: max(128px, 15svh); display: grid; grid-template-columns: minmax(0, 360px) 1fr minmax(0, 300px); gap: 32px; align-items: start; }
 .intro .label { margin-bottom: 18px; }
@@ -78,7 +118,7 @@ button { font: inherit; color: inherit; }
 @keyframes blink { 50% { opacity: 0; } }
 .intro .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
 .status { font-size: 13px; color: var(--muted); min-height: 1.4em; margin-top: 10px; }
-.board { grid-column: 3; background: rgba(20, 20, 18, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; padding: 20px; box-shadow: inset 0 0 0 1px var(--line); }
+.board { grid-column: 3; background: var(--card); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; padding: 20px; box-shadow: inset 0 0 0 1px var(--line); }
 .board .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; font-size: 14px; }
 .board .row + .row { box-shadow: 0 -1px 0 var(--line); }
 .board .k { color: var(--muted); }
@@ -135,8 +175,8 @@ section { padding-block: 140px 40px; overflow-x: clip; } /* clip, not hidden: st
 .reel .count { position: absolute; right: max(var(--pad), calc((100vw - var(--wrap)) / 2)); top: 92px; font: 600 13px var(--text); color: var(--muted); font-variant-numeric: tabular-nums; }
 .reel .count b { color: var(--ink); }
 /* placeholder until the real picture is dropped in */
-.ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 16px; background: radial-gradient(120% 90% at 30% 20%, #1f1d1a, #121210); }
-.ph::after { content: ""; position: absolute; inset: 14px; border-radius: 12px; border: 1px dashed rgba(244, 241, 234, 0.14); }
+.ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 16px; background: radial-gradient(120% 90% at 30% 20%, var(--ph-a), var(--ph-b)); }
+.ph::after { content: ""; position: absolute; inset: 14px; border-radius: 12px; border: 1px dashed var(--line-strong); }
 .ph b { font: 800 clamp(26px, 4vw, 64px)/1 var(--display); font-variation-settings: "opsz" 96, "wdth" 75; letter-spacing: -0.02em; color: var(--soft); text-transform: uppercase; }
 .ph small { font-size: 12px; color: var(--muted); }
 
@@ -167,7 +207,7 @@ section { padding-block: 140px 40px; overflow-x: clip; } /* clip, not hidden: st
 .how-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 64px; }
 .steps .step { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; gap: 14px; max-width: 36ch; }
 .steps .step .label b { transition: color .3s; }
-.steps .step h3 { font-size: clamp(28px, 3vw, 42px); color: #4b4943; transition: color .35s var(--ease); }
+.steps .step h3 { font-size: clamp(28px, 3vw, 42px); color: var(--dim); transition: color .35s var(--ease); }
 .steps .step.on h3 { color: var(--ink); }
 .steps .step p { color: var(--soft); }
 .stage { position: sticky; top: 16vh; align-self: start; }
@@ -180,7 +220,7 @@ section { padding-block: 140px 40px; overflow-x: clip; } /* clip, not hidden: st
 .term .state.on { display: block; animation: rise .45s var(--ease); }
 .term .ok { color: #7fd3a6; }
 .term .dim { color: var(--muted); }
-.term .hl { color: #ffb08f; }
+.term .hl { color: #2ecc71; }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 /* ---------- toolkit: tiles lit by group ---------- */
@@ -208,8 +248,8 @@ section { padding-block: 140px 40px; overflow-x: clip; } /* clip, not hidden: st
 .graph { position: relative; }
 .graph svg { position: absolute; left: 0; top: 0; width: 80px; height: 100%; overflow: visible; pointer-events: none; }
 .graph svg path { fill: none; stroke-width: 2; stroke-linecap: round; }
-.graph .main { stroke: rgba(244, 241, 234, 0.22); }
-.graph .branch { stroke: rgba(255, 91, 46, 0.6); }
+.graph .main { stroke: var(--line-strong); }
+.graph .branch { stroke: var(--signal); opacity: .7; }
 .commit { position: relative; display: grid; grid-template-columns: 80px minmax(0, 1fr) auto; gap: 18px; padding-block: 18px 30px; }
 .commit .dot { position: absolute; top: 24px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 2px var(--ink); left: 13px; }
 .commit[data-lane="2"] .dot { left: 45px; box-shadow: inset 0 0 0 2px var(--signal); }
@@ -287,7 +327,7 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
   .head { gap: 16px; }
   .reel { height: auto; }
   .reel .stick { position: static; height: auto; overflow: visible; }
-  .track { overflow-x: auto; scroll-snap-type: x mandatory; padding-right: var(--pad); padding-bottom: 8px; transform: none !important; scrollbar-width: none; }
+  .track { overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--pad); padding-right: var(--pad); padding-bottom: 8px; transform: none !important; scrollbar-width: none; }
   .track::-webkit-scrollbar { display: none; }
   .panel { width: 84vw; scroll-snap-align: start; }
   .panel .meta { grid-template-columns: 40px minmax(0, 1fr); }
@@ -297,11 +337,15 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
   .list .c, .list .r { grid-column: 2; }
   .list .arrow { grid-column: 3; grid-row: 1; }
   .peek { display: none; }
-  .stage { position: sticky; top: 64px; z-index: 1; }
-  .term { min-height: 0; height: 42svh; overflow: hidden; font-size: 12.5px; padding: 14px 16px; }
-  .steps .step { min-height: 52svh; }
-  .about { gap: 28px; }
-  .portrait { max-width: 320px; }
+  /* terminal first and pinned under the top bar; the steps scroll up beneath it */
+  .how-grid { gap: 0; }
+  .stage { order: -1; position: sticky; top: 76px; z-index: 1; padding-bottom: 12px; background: var(--bg); }
+  .term { min-height: 0; height: min(40svh, 340px); overflow: hidden; font-size: 12.5px; padding: 14px 16px; }
+  .steps .step { min-height: 44svh; max-width: 60ch; }
+  .about { grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 32px; }
+  .about-text p { max-width: none; }
+  .hero-grid .intro { max-width: 620px; }
+  .board { max-width: 620px; }
   .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; }
   .commit { grid-template-columns: 80px minmax(0, 1fr); }
   .commit time { grid-column: 2; grid-row: 1; padding: 0; margin-bottom: -6px; }
@@ -312,6 +356,11 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
   :root { --pad: max(20px, env(safe-area-inset-left, 0px)); }
   section { padding-block: 100px 24px; }
   .pair, .pipeline { grid-template-columns: minmax(0, 1fr); }
+  .about { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .portrait { max-width: 320px; }
+  .panel .meta { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .panel .go { grid-column: 1; margin-top: 6px; }
+  .top .btn { padding: 0 14px; }
   form.brief { padding: 20px; }
   .commit { grid-template-columns: 64px minmax(0, 1fr); }
   .graph svg { width: 64px; }
@@ -331,7 +380,13 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
 <div class="progress" id="progress" aria-hidden="true"></div>
 <div class="top">
   <a class="mark" href="#top" aria-label="Cristian Jupia, back to top">cj<i>.</i></a>
-  <a class="btn" href="#hire">Start a brief <svg><use href="#i-arrow"/></svg></a>
+  <div class="top-actions">
+    <button class="theme" type="button" aria-label="Light mode" aria-pressed="false" hidden>
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <a class="btn" href="#hire">Start a brief <svg><use href="#i-arrow"/></svg></a>
+  </div>
 </div>
 <nav class="rail" aria-label="Sections">
   <a href="#work"><em>01 Work</em></a>
@@ -537,7 +592,7 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
   <div class="wrap">
     <div class="head rv">
       <div><p class="label"><b>04</b> Path</p><h2 id="path-h">Eleven years, <span class="accent">one main branch.</span></h2></div>
-      <p>My career as a commit graph: the main line is full-time work, the orange branches ran alongside it.</p>
+      <p>My career as a commit graph: the main line is full-time work, the green branches ran alongside it.</p>
     </div>
     <div class="about">
       <figure class="portrait rv" style="margin: 0"><img src="portfolio-assets/portrait.jpg" width="800" height="800" alt="Portrait of Cristian Jupia" loading="lazy"><figcaption>Cristian Jupia, Metro Manila</figcaption></figure>
@@ -623,6 +678,22 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
   requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.add("ready"); }); });
   var $ = function (s) { return document.querySelector(s); };
   var $$ = function (s) { return [].slice.call(document.querySelectorAll(s)); };
+
+  // theme toggle (hidden without script, since it needs script to work)
+  var themeBtn = $(".theme");
+  var syncTheme = function () {
+    var light = root.getAttribute("data-theme") === "light";
+    themeBtn.setAttribute("aria-pressed", String(light));
+    themeBtn.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
+  };
+  themeBtn.hidden = false;
+  syncTheme();
+  themeBtn.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+    syncTheme();
+  });
 
   function copy(text, status, okMsg) {
     var done = function () { status.textContent = okMsg || "Email copied."; setTimeout(function () { status.textContent = ""; }, 3000); };
@@ -730,7 +801,7 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
     });
   });
 
-  // career graph: main line through lane 1, an orange loop out to lane 2 for each side branch
+  // career graph: main line through lane 1, a green loop out to lane 2 for each side branch
   var graph = $("#graph"), svg = $("#graph-svg");
   function drawGraph() {
     var g = graph.getBoundingClientRect(), commits = $$("#graph .commit");
