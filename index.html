@@ -285,20 +285,13 @@ section { padding-block: 140px 40px; overflow-x: clip; } /* clip, not hidden: st
 .reach .line span:first-child { color: var(--muted); }
 .reach .line b { font-weight: 500; overflow-wrap: anywhere; text-align: right; }
 .reach .line:hover b { color: var(--signal); }
-form.brief { background: var(--raise); border-radius: 20px; padding: 28px; display: grid; gap: 16px; }
-.brief .label { justify-content: space-between; }
-.field { display: grid; gap: 8px; }
-.field label { font: 500 13px var(--text); color: var(--muted); }
-.field input, .field textarea { width: 100%; border: 0; border-radius: 12px; background: var(--raise-2); color: var(--ink); font: 400 16px var(--text); padding: 14px 16px; box-shadow: inset 0 0 0 1px transparent; transition: box-shadow .2s; }
-.field textarea { min-height: 160px; resize: vertical; line-height: 1.5; }
-.field input:focus, .field textarea:focus { outline: none; box-shadow: inset 0 0 0 1.5px var(--signal); }
-.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-form .btn { justify-content: center; width: 100%; min-height: 54px; }
-form .note { font-size: 13px; color: var(--muted); text-align: center; }
+.send { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 20px; }
+.send span { font-size: 13px; color: var(--muted); }
+.contact h3 { font-size: clamp(26px, 2.6vw, 36px); }
+.contact .reach { margin-top: 18px; }
 
 /* ---------- footer ---------- */
-footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
-.sign { font: 800 clamp(64px, 15.5vw, 260px)/0.8 var(--display); font-variation-settings: "opsz" 96, "wdth" 75; letter-spacing: -0.04em; text-transform: uppercase; color: var(--raise-2); white-space: nowrap; text-align: center; margin-bottom: 28px; user-select: none; }
+footer { margin-top: 120px; padding-block: 28px; box-shadow: 0 -1px 0 var(--line); }
 .base { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); }
 .base nav { display: flex; gap: 20px; flex-wrap: wrap; }
 .base a { text-decoration: none; color: var(--soft); }
@@ -355,13 +348,12 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
 @media (max-width: 600px) {
   :root { --pad: max(20px, env(safe-area-inset-left, 0px)); }
   section { padding-block: 100px 24px; }
-  .pair, .pipeline { grid-template-columns: minmax(0, 1fr); }
+  .pipeline { grid-template-columns: minmax(0, 1fr); }
   .about { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .portrait { max-width: 320px; }
   .panel .meta { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .panel .go { grid-column: 1; margin-top: 6px; }
   .top .btn { padding: 0 14px; }
-  form.brief { padding: 20px; }
   .commit { grid-template-columns: 64px minmax(0, 1fr); }
   .graph svg { width: 64px; }
 }
@@ -438,8 +430,8 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
         <div class="meta"><span class="no">01</span><div><h3>Empleo</h3><p>All-in-one HR for Philippine businesses: attendance, payroll and employee records, on the web and on phones. Live SaaS, Technical Lead.</p></div><a class="go" href="https://empleospace.com/">Visit <svg class="arrow"><use href="#i-arrow"/></svg></a></div>
       </article>
       <article class="panel">
-        <div class="shot"><div class="ph" role="img" aria-label="Image placeholder for EDPPAS"><b>EDPPAS</b><small>Image placeholder · edppas.jpg</small></div></div>
-        <div class="meta"><span class="no">02</span><div><h3>EDPPAS · PNP</h3><p>A mobile clock-in app for the Philippine National Police that keeps recording attendance without signal and syncs once back online. Technical Lead.</p></div></div>
+        <div class="shot"><img src="portfolio-assets/ayahtek.jpg" width="1280" height="800" alt="Ayahtek company website" loading="lazy"></div>
+        <div class="meta"><span class="no">02</span><div><h3>Ayahtek</h3><p>The company website for Ayahtek, the software firm where I lead government systems and SaaS products. Built from scratch in WordPress.</p></div><a class="go" href="https://ayahtek.com/">Visit <svg class="arrow"><use href="#i-arrow"/></svg></a></div>
       </article>
       <article class="panel">
         <div class="shot"><img src="portfolio-assets/smallbiz.jpg" width="1280" height="800" alt="Small Biz Optimize website" loading="lazy"></div>
@@ -630,7 +622,7 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
     <div class="hire-grid">
       <div class="needs rv">
         <h3>What do you need?</h3>
-        <p>Pick one or more. Your choices go straight into the brief.</p>
+        <p>Pick one or more, then email me about it.</p>
         <div class="opts" id="opts">
           <button class="opt" type="button" aria-pressed="false" data-need="a WordPress website"><b>WordPress site</b><span>Elementor, WooCommerce or a custom theme, new or redesigned.</span></button>
           <button class="opt" type="button" aria-pressed="false" data-need="a custom web system"><b>Custom system</b><span>Records, approvals and reports, from requirements to production.</span></button>
@@ -639,6 +631,11 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
           <button class="opt" type="button" aria-pressed="false" data-need="a technical lead for my team"><b>Technical lead</b><span>Leading the team, code review, project management and QA.</span></button>
           <button class="opt" type="button" aria-pressed="false" data-need="maintenance and support"><b>Maintenance</b><span>Updates, fixes, server care and UI changes on live sites.</span></button>
         </div>
+        <div class="send"><button class="btn" type="button" id="send-needs">Email me about this <svg><use href="#i-arrow"/></svg></button><span id="needs-count">0 selected</span></div>
+        <p class="status" id="send-status" aria-live="polite"></p>
+      </div>
+      <div class="contact rv">
+        <h3>Or reach me directly</h3>
         <div class="reach">
           <button class="line" type="button" id="copy-email"><span>Email · click to copy</span><b id="email-text">cristian.jupia13@gmail.com</b></button>
           <a class="line" href="https://www.linkedin.com/in/cristian-jupia"><span>LinkedIn</span><b>linkedin.com/in/cristian-jupia</b></a>
@@ -646,23 +643,12 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
           <p class="status" id="copy-status-2" aria-live="polite"></p>
         </div>
       </div>
-      <form class="brief rv" id="brief" novalidate>
-        <p class="label"><span><b>Your brief</b></span><span id="brief-count">0 selected</span></p>
-        <div class="pair">
-          <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
-          <div class="field"><label for="f-mail">Your email</label><input id="f-mail" name="email" type="email" autocomplete="email" required></div>
-        </div>
-        <div class="field"><label for="f-msg">Project details</label><textarea id="f-msg" name="message" placeholder="Pick what you need on the left, then add your goals and deadline." required></textarea></div>
-        <button class="btn" type="submit">Send the brief <svg><use href="#i-arrow"/></svg></button>
-        <p class="note" id="form-status" aria-live="polite">Opens your email app with the brief ready to send.</p>
-      </form>
     </div>
   </div>
 </section>
 </main>
 
 <footer>
-  <p class="sign" aria-hidden="true">Ship it.</p>
   <div class="wrap base">
     <span>© 2026 Cristian Jupia · Technical Lead &amp; WordPress Developer</span>
     <nav aria-label="Footer"><a href="#work">Work</a><a href="#path">Path</a><a href="https://www.linkedin.com/in/cristian-jupia">LinkedIn</a><a href="Cristian-Jupia-Resume.pdf" data-resume>Resume</a><a href="#top">Back to top ↑</a></nav>
@@ -738,32 +724,22 @@ footer { margin-top: 120px; padding-block: 0 28px; overflow: hidden; }
     }, 2800);
   }
 
-  // brief builder: chosen needs become the first line of the message
-  var opts = $$("#opts .opt"), msg = $("#f-msg"), count = $("#brief-count"), LEAD = "I need ";
+  // needs picker: the chosen needs become the first line of an email
+  var opts = $$("#opts .opt"), count = $("#needs-count");
+  var picked = function () { return opts.filter(function (o) { return o.getAttribute("aria-pressed") === "true"; }).map(function (o) { return o.dataset.need; }); };
   opts.forEach(function (b) {
     b.addEventListener("click", function () {
       b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
-      var picked = opts.filter(function (o) { return o.getAttribute("aria-pressed") === "true"; }).map(function (o) { return o.dataset.need; });
-      var rest = msg.value.split("\n").filter(function (l, i) { return !(i === 0 && l.indexOf(LEAD) === 0); }).join("\n").replace(/^\n+/, "");
-      var first = picked.length ? LEAD + (picked.length > 1 ? picked.slice(0, -1).join(", ") + " and " + picked[picked.length - 1] : picked[0]) + "." : "";
-      msg.value = first ? first + (rest ? "\n" + rest : "\n") : rest;
-      count.textContent = picked.length + " selected";
+      count.textContent = picked().length + " selected";
     });
   });
-  $("#brief").addEventListener("submit", function (e) {
-    e.preventDefault();
-    var f = e.target, status = $("#form-status");
-    var name = f.name.value.trim(), mail = f.email.value.trim(), body = f.message.value.trim();
-    if (!name || !body || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
-      status.textContent = "Please add your name, a valid email and a few words about the project.";
-      (!name ? f.name : !body ? f.message : f.email).focus();
-      return;
-    }
-    var text = body + "\n\n" + name + "\n" + mail;
-    var href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Project brief from " + name) + "&body=" + encodeURIComponent(text);
+  $("#send-needs").addEventListener("click", function () {
+    var p = picked();
+    var text = "Hi Cristian,\n\n" + (p.length ? "I need " + (p.length > 1 ? p.slice(0, -1).join(", ") + " and " + p[p.length - 1] : p[0]) + ".\n\n" : "");
+    var href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Project enquiry") + "&body=" + encodeURIComponent(text);
     var w = window.open(href, "_blank");
     if (!w) location.href = href;
-    copy("To: " + EMAIL + "\n\n" + text, status, "Your mail app should open. The brief is also copied, in case it doesn't.");
+    copy("To: " + EMAIL + "\n\n" + text, $("#send-status"), "Your mail app should open. The message is also copied, in case it doesn't.");
   });
 
   // project index: filters, and a preview that follows the pointer
