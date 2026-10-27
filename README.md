@@ -1,6 +1,8 @@
 # Cristian Jupia — Portfolio
 
-One-page portfolio ("ship log" layout). Open `index.html` in a browser; no build step.
+One-page portfolio ("ship log" layout). Live at https://hermanosensitibo.github.io/cristian-portfolio/
+
+Open `index.html` in a browser to work on it locally; no build step.
 
 - `index.html`: the whole page (styles and scripts inline, fonts from Google Fonts)
 - `portfolio-assets/`: cut-out photo, portrait and site screenshots
