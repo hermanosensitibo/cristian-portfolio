@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, extname, resolve, sep } from 'node:path';
 const root = resolve(import.meta.dirname, '..'), port = +process.argv[2] || 4173;
-const types = { '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.pdf': 'application/pdf', '.md': 'text/plain; charset=utf-8' };
+const types = { '.html': 'text/html; charset=utf-8', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml','.pdf': 'application/pdf', '.md': 'text/plain; charset=utf-8' };
 createServer(async (req, res) => {
   let path;
   try { path = resolve(join(root, decodeURIComponent(new URL(req.url, 'http://x').pathname))); }
